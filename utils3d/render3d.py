@@ -33,13 +33,13 @@ class Render3D:
         min_z = self.config['process_3d']['min_z_angle']
         max_z = self.config['process_3d']['max_z_angle']
 
-        rx = np.double(np.random.randint(min_x, max_x, 1))
-        ry = np.double(np.random.randint(min_y, max_y, 1))
-        rz = np.double(np.random.randint(min_z, max_z, 1))
+        rx = float(np.random.randint(min_x, max_x))
+        ry = float(np.random.randint(min_y, max_y))
+        rz = float(np.random.randint(min_z, max_z))
         # the following values are currently not used
-        scale = np.double(np.random.uniform(1.4, 1.9, 1))
-        tx = np.double(np.random.randint(-20, 20, 1))
-        ty = np.double(np.random.randint(-20, 20, 1))
+        scale = float(np.random.uniform(1.4, 1.9))
+        tx = float(np.random.randint(-20, 20))
+        ty = float(np.random.randint(-20, 20))
 
         return rx, ry, rz, scale, tx, ty
 
