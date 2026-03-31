@@ -101,9 +101,9 @@ class Utils3D:
                 y = y / hm_size * img_size
                 x = x / hm_size * img_size
 
-                # Making end points of line in world coordinates
-                p_wc_s = np.zeros((3, 1))
-                p_wc_e = np.zeros((3, 1))
+                # Making end points of line in world coordinates (1D vectors for VTK)
+                p_wc_s = np.zeros(3)
+                p_wc_e = np.zeros(3)
 
                 p_wc_s[0] = (x / winsize) * x_len + x_min
                 p_wc_s[1] = ((winsize - 1 - y) / winsize) * y_len + y_min
@@ -118,9 +118,9 @@ class Utils3D:
                 lines = vtk.vtkCellArray()
 
                 lines.InsertNextCell(2)
-                pid = points.InsertNextPoint(p_wc_s)
+                pid = points.InsertNextPoint(float(p_wc_s[0]), float(p_wc_s[1]), float(p_wc_s[2]))
                 lines.InsertCellPoint(pid)
-                pid = points.InsertNextPoint(p_wc_e)
+                pid = points.InsertNextPoint(float(p_wc_e[0]), float(p_wc_e[1]), float(p_wc_e[2]))
                 lines.InsertCellPoint(pid)
 
                 pd.SetPoints(points)
