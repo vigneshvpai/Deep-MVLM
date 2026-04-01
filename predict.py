@@ -30,7 +30,7 @@ def process_file_list(config, file_name):
         print('Processing ', file_name)
         name_lm_txt = os.path.splitext(file_name)[0] + '_landmarks.txt'
         landmarks = dm.predict_one_file(file_name)
-        dm.write_landmarks_as_text(landmarks, name_lm_txt)
+        dm.write_landmarks_as_vtk_points(landmarks, name_lm_txt)
 
 
 def process_files_in_dir(config, dir_name):
@@ -42,7 +42,7 @@ def process_files_in_dir(config, dir_name):
         print('Processing ', file_name)
         name_lm_txt = os.path.splitext(file_name)[0] + '_landmarks.txt'
         landmarks = dm.predict_one_file(file_name)
-        dm.write_landmarks_as_text(landmarks, name_lm_txt)
+        dm.write_landmarks_as_vtk_points(landmarks, name_lm_txt)
 
 
 def main(config):
