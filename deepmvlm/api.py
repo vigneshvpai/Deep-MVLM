@@ -196,8 +196,9 @@ class DeepMVLM:
         Utils3D.write_landmarks_as_text_external(landmarks, file_name)
 
     @staticmethod
-    def write_landmarks_as_ply(landmarks, file_name):
-        Utils3D.write_landmarks_as_ply_external(landmarks, file_name)
+    def write_landmarks_as_ply(landmarks, mesh_path):
+        """Write ``<mesh_stem>_landmarks.ply`` beside ``mesh_path``: gray head + blue spheres."""
+        Utils3D.write_landmarks_as_ply_external(landmarks, mesh_path)
 
     @staticmethod
     def visualise_mesh_and_landmarks(mesh_name, landmarks=None):

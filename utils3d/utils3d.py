@@ -566,15 +566,17 @@ class Utils3D:
         f.close()
 
     @staticmethod
-    def write_landmarks_as_ply_external(landmarks, file_name):
-        """Write landmarks as small blue sphere meshes in PLY for viewers e.g. MeshLab.
+    def write_landmarks_as_ply_external(landmarks, mesh_path):
+        """Write combined PLY next to the mesh: ``<mesh_stem>_landmarks.ply``.
 
-        Uses the same radius rule as Render3D.get_landmarks_as_spheres (0.8% of landmark
-        bbox diagonal) so points render as tiny balls, not single-vertex splats.
+        Surface mesh (neutral gray) + blue landmark spheres. If the mesh cannot be read,
+        writes landmark spheres only. Sphere radius: 0.4% of landmark bbox diagonal.
         """
         n_landmarks = landmarks.shape[0]
         if n_landmarks < 1:
             return
+
+        ply_out_path = os.path.splitext(mesh_path)[0] + "_landmarks.ply"
 
         xm, xM = float(landmarks[:, 0].min()), float(landmarks[:, 0].max())
         ym, yM = float(landmarks[:, 1].min()), float(landmarks[:, 1].max())
@@ -582,10 +584,23 @@ class Utils3D:
         diag_len = float(
             np.sqrt((xM - xm) ** 2 + (yM - ym) ** 2 + (zM - zm) ** 2)
         )
-        # Half of Render3D.get_landmarks_as_spheres (0.8% → 0.4% of bbox diagonal).
         sphere_size = max(diag_len * 0.004, 1e-6)
 
         append = vtk.vtkAppendPolyData()
+
+        pd_head = Utils3D.multi_read_surface(mesh_path)
+        if pd_head is not None and pd_head.GetNumberOfPoints() > 0:
+            n_head = pd_head.GetNumberOfPoints()
+            head_colors = vtk.vtkUnsignedCharArray()
+            head_colors.SetNumberOfComponents(3)
+            head_colors.SetName("RGB")
+            for _ in range(n_head):
+                head_colors.InsertNextTuple3(200, 200, 200)
+            pd_head.GetPointData().SetScalars(head_colors)
+            pd_head.GetPointData().SetActiveScalars("RGB")
+            append.AddInputData(pd_head)
+
+        spheres_append = vtk.vtkAppendPolyData()
         for lm_no in range(n_landmarks):
             sphere = vtk.vtkSphereSource()
             sphere.SetCenter(landmarks[lm_no, 0], landmarks[lm_no, 1], landmarks[lm_no, 2])
@@ -593,22 +608,25 @@ class Utils3D:
             sphere.SetThetaResolution(16)
             sphere.SetPhiResolution(16)
             sphere.Update()
-            append.AddInputData(sphere.GetOutput())
+            spheres_append.AddInputData(sphere.GetOutput())
             del sphere
+        spheres_append.Update()
+        pd_spheres = spheres_append.GetOutput()
+        n_sph = pd_spheres.GetNumberOfPoints()
+        sph_colors = vtk.vtkUnsignedCharArray()
+        sph_colors.SetNumberOfComponents(3)
+        sph_colors.SetName("RGB")
+        for _ in range(n_sph):
+            sph_colors.InsertNextTuple3(0, 0, 255)
+        pd_spheres.GetPointData().SetScalars(sph_colors)
+        pd_spheres.GetPointData().SetActiveScalars("RGB")
+        append.AddInputData(pd_spheres)
+
         append.Update()
         pd = append.GetOutput()
 
-        n_pts = pd.GetNumberOfPoints()
-        colors = vtk.vtkUnsignedCharArray()
-        colors.SetNumberOfComponents(3)
-        colors.SetName("RGB")
-        for _ in range(n_pts):
-            colors.InsertNextTuple3(0, 0, 255)
-        pd.GetPointData().SetScalars(colors)
-        pd.GetPointData().SetActiveScalars("RGB")
-
         writer = vtk.vtkPLYWriter()
-        writer.SetFileName(file_name)
+        writer.SetFileName(ply_out_path)
         writer.SetInputData(pd)
         writer.Write()
 
