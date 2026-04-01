@@ -196,5 +196,9 @@ class DeepMVLM:
         Utils3D.write_landmarks_as_text_external(landmarks, file_name)
 
     @staticmethod
+    def write_landmarks_as_ply(landmarks, file_name):
+        Utils3D.write_landmarks_as_ply_external(landmarks, file_name)
+
+    @staticmethod
     def visualise_mesh_and_landmarks(mesh_name, landmarks=None):
         Render3D.visualise_mesh_and_landmarks(mesh_name, landmarks)

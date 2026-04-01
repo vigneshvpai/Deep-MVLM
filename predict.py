@@ -9,10 +9,12 @@ def process_one_file(config, file_name):
     print('Processing ', file_name)
     name_lm_vtk = os.path.splitext(file_name)[0] + '_landmarks.vtk'
     name_lm_txt = os.path.splitext(file_name)[0] + '_landmarks.txt'
+    name_lm_ply = os.path.splitext(file_name)[0] + '_landmarks.ply'
     dm = deepmvlm.DeepMVLM(config)
     landmarks = dm.predict_one_file(file_name)
     dm.write_landmarks_as_vtk_points(landmarks, name_lm_vtk)
     dm.write_landmarks_as_text(landmarks, name_lm_txt)
+    dm.write_landmarks_as_ply(landmarks, name_lm_ply)
     dm.visualise_mesh_and_landmarks(file_name, landmarks)
 
 
@@ -29,8 +31,10 @@ def process_file_list(config, file_name):
     for file_name in names:
         print('Processing ', file_name)
         name_lm_txt = os.path.splitext(file_name)[0] + '_landmarks.txt'
+        name_lm_ply = os.path.splitext(file_name)[0] + '_landmarks.ply'
         landmarks = dm.predict_one_file(file_name)
-        dm.write_landmarks_as_vtk_points(landmarks, name_lm_txt)
+        dm.write_landmarks_as_text(landmarks, name_lm_txt)
+        dm.write_landmarks_as_ply(landmarks, name_lm_ply)
 
 
 def process_files_in_dir(config, dir_name):
@@ -41,8 +45,10 @@ def process_files_in_dir(config, dir_name):
     for file_name in names:
         print('Processing ', file_name)
         name_lm_txt = os.path.splitext(file_name)[0] + '_landmarks.txt'
+        name_lm_ply = os.path.splitext(file_name)[0] + '_landmarks.ply'
         landmarks = dm.predict_one_file(file_name)
-        dm.write_landmarks_as_vtk_points(landmarks, name_lm_txt)
+        dm.write_landmarks_as_text(landmarks, name_lm_txt)
+        dm.write_landmarks_as_ply(landmarks, name_lm_ply)
 
 
 def main(config):
