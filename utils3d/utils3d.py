@@ -582,7 +582,8 @@ class Utils3D:
         diag_len = float(
             np.sqrt((xM - xm) ** 2 + (yM - ym) ** 2 + (zM - zm) ** 2)
         )
-        sphere_size = max(diag_len * 0.008, 1e-6)
+        # Half of Render3D.get_landmarks_as_spheres (0.8% → 0.4% of bbox diagonal).
+        sphere_size = max(diag_len * 0.004, 1e-6)
 
         append = vtk.vtkAppendPolyData()
         for lm_no in range(n_landmarks):
