@@ -567,10 +567,9 @@ class Utils3D:
 
     @staticmethod
     def write_landmarks_as_ply_external(landmarks, mesh_path):
-        """Write combined PLY next to the mesh: ``<mesh_stem>_landmarks.ply``.
+        """Write landmark PLY next to the mesh: ``<mesh_stem>_landmarks.ply``.
 
-        Surface mesh (neutral gray) + blue landmark spheres. If the mesh cannot be read,
-        writes landmark spheres only. Sphere radius: 0.4% of landmark bbox diagonal.
+        Blue landmark spheres only. Sphere radius: 0.4% of landmark bbox diagonal.
         """
         n_landmarks = landmarks.shape[0]
         if n_landmarks < 1:
@@ -585,20 +584,6 @@ class Utils3D:
             np.sqrt((xM - xm) ** 2 + (yM - ym) ** 2 + (zM - zm) ** 2)
         )
         sphere_size = max(diag_len * 0.004, 1e-6)
-
-        append = vtk.vtkAppendPolyData()
-
-        pd_head = Utils3D.multi_read_surface(mesh_path)
-        if pd_head is not None and pd_head.GetNumberOfPoints() > 0:
-            n_head = pd_head.GetNumberOfPoints()
-            head_colors = vtk.vtkUnsignedCharArray()
-            head_colors.SetNumberOfComponents(3)
-            head_colors.SetName("RGB")
-            for _ in range(n_head):
-                head_colors.InsertNextTuple3(200, 200, 200)
-            pd_head.GetPointData().SetScalars(head_colors)
-            pd_head.GetPointData().SetActiveScalars("RGB")
-            append.AddInputData(pd_head)
 
         spheres_append = vtk.vtkAppendPolyData()
         for lm_no in range(n_landmarks):
@@ -620,18 +605,14 @@ class Utils3D:
             sph_colors.InsertNextTuple3(0, 0, 255)
         pd_spheres.GetPointData().SetScalars(sph_colors)
         pd_spheres.GetPointData().SetActiveScalars("RGB")
-        append.AddInputData(pd_spheres)
-
-        append.Update()
-        pd = append.GetOutput()
 
         writer = vtk.vtkPLYWriter()
         writer.SetFileName(ply_out_path)
-        writer.SetInputData(pd)
+        writer.SetInputData(pd_spheres)
         writer.Write()
 
         del writer
-        del pd
+        del pd_spheres
 
     @staticmethod
     def get_mesh_files_in_dir(directory):

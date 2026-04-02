@@ -197,7 +197,7 @@ class DeepMVLM:
 
     @staticmethod
     def write_landmarks_as_ply(landmarks, mesh_path):
-        """Write ``<mesh_stem>_landmarks.ply`` beside ``mesh_path``: gray head + blue spheres."""
+        """Write ``<mesh_stem>_landmarks.ply`` beside ``mesh_path``: blue spheres."""
         Utils3D.write_landmarks_as_ply_external(landmarks, mesh_path)
 
     @staticmethod
